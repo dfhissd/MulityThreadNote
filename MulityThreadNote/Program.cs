@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Diagnostics;
 
 namespace MulityThreadNote
 {
@@ -33,17 +34,44 @@ namespace MulityThreadNote
             //Console.ReadLine();
 
             //=====================终止线程======================//
-            Console.WriteLine("Starting Program...");
-            Thread t1 = new Thread(PrintNumbersWithDelay2);
-            t1.Start();
-            Thread.Sleep(TimeSpan.FromSeconds(6));
-            t1.Abort();     //使用Abort()终止线程
-            Console.WriteLine("Thread t1 has been aborted");
-            Thread t2 = new Thread(PrintNumbers2);
-            //t2.Start();
-            PrintNumbers2();
-            Console.ReadLine();
+            //Console.WriteLine("Starting Program...");
+            //Thread t1 = new Thread(PrintNumbersWithDelay2);
+            //t1.Start();
+            //Thread.Sleep(TimeSpan.FromSeconds(6));
+            //t1.Abort();     //使用Abort()终止线程
+            //Console.WriteLine("Thread t1 has been aborted");
+            //Thread t2 = new Thread(PrintNumbers2);
+            ////t2.Start();
+            //PrintNumbers2();
+            //Console.ReadLine();
 
+            //=====================检测线程状态=====================//
+            //Console.WriteLine("Start Program...");
+            //Thread t1 = new Thread(Status);
+            //Thread t2 = new Thread(OnlySleep);
+            //Console.WriteLine(t1.ThreadState.ToString());
+            //t2.Start();
+            //t1.Start();
+            //for (int i = 0; i < 20; i++)
+            //    Console.WriteLine(t1.ThreadState.ToString());
+            //Thread.Sleep(TimeSpan.FromSeconds(6));
+            //t1.Abort();
+            //Console.WriteLine("thread t1 has been aborted");
+            //Console.WriteLine(t1.ThreadState.ToString());
+            //Console.WriteLine(t2.ThreadState.ToString());
+            //Console.ReadLine();
+
+            //=====================线程优先级=====================//
+            Console.WriteLine("Current thread priority: {0}", Thread.CurrentThread.Priority);
+            Console.WriteLine("Running on all cores available");//获取线程状态
+            RunThreads();
+
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+            Console.WriteLine("Running on a single Core");
+            //让操作系统的所有线程运行在单个CPU核心上
+            Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(1);
+            RunThreads();
+            Console.ReadLine();
 
         }
         //=====================创建线程======================//
@@ -88,5 +116,55 @@ namespace MulityThreadNote
                 Console.WriteLine(i);
             }
         }
+        //=====================检测线程状态=====================//
+        private static void Status()
+        {
+            Console.WriteLine("Staring...");
+            Console.WriteLine(Thread.CurrentThread.ToString());//获取当前线程状态
+            for (int i = 0; i < 10; i++) {
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+                Console.WriteLine(i);
+            }
+        }
+        private static void OnlySleep()
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+        }
+        //=====================线程优先级=====================//
+        private static void RunThreads()
+        {
+            var sample = new ThreadSample();
+
+            var t1 = new Thread(sample.CountNumbers);
+            t1.Name = "Thread One";
+            var t2 = new Thread(sample.CountNumbers);
+            t2.Name = "Thread Two";
+
+            t1.Priority = ThreadPriority.Highest;   //使用priority设置线程的优先级
+            t2.Priority = ThreadPriority.Lowest;
+            t1.Start();
+            t2.Start();
+
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+            sample.stop();
+        }
+        class ThreadSample
+        {
+            private bool _isStopped = false;
+            public void stop()
+            {
+                _isStopped = true;
+            }
+
+            public void CountNumbers()
+            {
+                long counter = 0;
+                while (!_isStopped) {
+                    counter++;
+                }
+                Console.WriteLine("{0} with {1} priority has a count = {2}", Thread.CurrentThread.Name, Thread.CurrentThread.Priority, counter.ToString("NO"));
+            }
+        }
+
     }
 }
