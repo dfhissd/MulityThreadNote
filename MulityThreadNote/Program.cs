@@ -9,6 +9,7 @@ namespace MulityThreadNote
     {
         static void Main(string[] args)
         {
+
         }
     }
 }
