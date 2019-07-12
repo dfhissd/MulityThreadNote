@@ -62,16 +62,30 @@ namespace MulityThreadNote
             //Console.ReadLine();
 
             //=====================线程优先级=====================//
-            Console.WriteLine("Current thread priority: {0}", Thread.CurrentThread.Priority);
-            Console.WriteLine("Running on all cores available");//获取线程状态
-            RunThreads();
+            //Console.WriteLine("Current thread priority: {0}", Thread.CurrentThread.Priority);
+            //Console.WriteLine("Running on all cores available");//获取线程状态
+            //RunThreads();
 
-            Thread.Sleep(TimeSpan.FromSeconds(2));
-            Console.WriteLine("Running on a single Core");
-            //让操作系统的所有线程运行在单个CPU核心上
-            Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(1);
-            RunThreads();
-            Console.ReadLine();
+            //Thread.Sleep(TimeSpan.FromSeconds(2));
+            //Console.WriteLine("Running on a single Core");
+            ////让操作系统的所有线程运行在单个CPU核心上
+            //Process.GetCurrentProcess().ProcessorAffinity = new IntPtr(1);
+            //RunThreads();
+            //Console.ReadLine();
+
+            //=====================前台线程和后台线程=====================//
+            var sampleForground = new Threadsample(10);
+            var sampleBackground = new Threadsample(20);
+            var t1 = new Thread(sampleForground.CountNumbers);
+            t1.Name = "ForgroundThread";    //没有明确声明的均为前台线程
+            var t2 = new Thread(sampleBackground.CountNumbers);
+            t2.Name = "BackgroundThread";
+            t2.IsBackground = true;     //设置为后台线程
+
+            t1.Start();
+            t2.Start();
+            Console.ReadKey();
+
 
         }
         //=====================创建线程======================//
@@ -165,6 +179,24 @@ namespace MulityThreadNote
                 Console.WriteLine("{0} with {1} priority has a count = {2}", Thread.CurrentThread.Name, Thread.CurrentThread.Priority, counter.ToString("NO"));
             }
         }
+        //=====================前台线程和后台线程=====================//
+        class Threadsample
+        {
+            private readonly int _iteration;
 
+            public Threadsample(int iteration)
+            {
+                _iteration = iteration;
+            }
+
+            public void CountNumbers()
+            {
+                for (int i = 0; i < _iteration; i++) {
+                    Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                    Console.WriteLine("{0} prints {1}", Thread.CurrentThread.Name, i);
+                }
+
+            }
+        }
     }
 }
