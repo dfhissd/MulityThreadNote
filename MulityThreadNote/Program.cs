@@ -17,9 +17,17 @@ namespace MulityThreadNote
             //t2.Start(10);
             //Console.ReadKey();
             //=====================线程阻塞======================//
-            Thread t1 = new Thread(PrintNumbersWithDelay);
-            t1.Start();
-            PrintNumbers();
+            //Thread t1 = new Thread(PrintNumbersWithDelay);
+            //t1.Start();
+            //PrintNumbers();
+            //Console.ReadLine();
+            //=====================线程等待======================//
+            Console.WriteLine("Starting...");
+            Thread th = new Thread(PrintNumbersWithDelay2);
+            th.Start();
+            th.Join();  //使用join等待th完成
+            PrintNumbers2();
+            Console.WriteLine("THread Complete");
             Console.ReadLine();
 
         }
@@ -49,7 +57,21 @@ namespace MulityThreadNote
             }
             Console.WriteLine();
         }
-
-
+        //=====================线程等待======================//
+        static void PrintNumbers2()
+        {
+            Console.WriteLine("PrintNumbers2 Starting...");
+            for (int i = 0; i < 10; i++)
+                Console.WriteLine(i);
+        }
+        static void PrintNumbersWithDelay2()
+        {
+            Console.WriteLine("PrintNumbersWithDelay2 Starting...");
+            for (int i = 0; i < 10; i++)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+                Console.WriteLine(i);
+            }
+        }
     }
 }
