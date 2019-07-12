@@ -74,18 +74,52 @@ namespace MulityThreadNote
             //Console.ReadLine();
 
             //=====================前台线程和后台线程=====================//
-            var sampleForground = new Threadsample(10);
-            var sampleBackground = new Threadsample(20);
-            var t1 = new Thread(sampleForground.CountNumbers);
-            t1.Name = "ForgroundThread";    //没有明确声明的均为前台线程
-            var t2 = new Thread(sampleBackground.CountNumbers);
-            t2.Name = "BackgroundThread";
-            t2.IsBackground = true;     //设置为后台线程
+            //var sampleForground = new Threadsample(10);
+            //var sampleBackground = new Threadsample(20);
+            //var t1 = new Thread(sampleForground.CountNumbers);
+            //t1.Name = "ForgroundThread";    //没有明确声明的均为前台线程
+            //var t2 = new Thread(sampleBackground.CountNumbers);
+            //t2.Name = "BackgroundThread";
+            //t2.IsBackground = true;     //设置为后台线程
 
+            //t1.Start();
+            //t2.Start();
+            //Console.ReadKey();
+
+            //=====================向线程传递参数=====================//
+            ThreadSample2 sample = new ThreadSample2(5);
+
+            Thread t1 = new Thread(sample.CountNumbers);
+            t1.Name = "ThreadOne";
             t1.Start();
-            t2.Start();
-            Console.ReadKey();
+            t1.Join();
+            Console.WriteLine("-----------------------");
 
+            Thread t2 = new Thread(Count);
+            t2.Name = "ThreadTwo";
+            t2.Start(3);
+            t2.Join();
+            Console.WriteLine("-----------------------");
+
+            //使用lambda表达式引用另一个C#对象的方式被称为闭包。当在lambda表达式中使用任何局部变量时，
+            //C#会生成一个类，并将该变量作为该类的一个属性，但是我们无须定义该类，
+            //C#编译器会自动帮我们实现
+            Thread t3 = new Thread(() => CountNumbers(5));
+            t3.Name = "ThreadThree";
+            t3.Start();
+            t3.Join();
+            Console.WriteLine("--------------------------");
+
+            int i = 10;
+            Thread t4 = new Thread(() => PrintNumber(i));
+            
+
+            i = 20;
+            Thread t5 = new Thread(() => PrintNumber(i));
+            t4.Start();
+            t5.Start();
+            //t4, t5都会输出20，因为t4,t5没有start之前i已经变成20了
+            Console.ReadKey();
 
         }
         //=====================创建线程======================//
@@ -197,6 +231,41 @@ namespace MulityThreadNote
                 }
 
             }
+        }
+        //=====================向线程传递参数=====================//
+        static void Count(object iterations)
+        {
+            CountNumbers((int)iterations);
+
+        }
+        static void CountNumbers(int iteration)
+        {
+            for (int i = 1; i <= iteration; i++) {
+                Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                Console.WriteLine("{0} prints {1}", Thread.CurrentThread.Name, i);
+            }
+        }
+        static void PrintNumber(int number)
+        {
+            Console.WriteLine(number);
+        }
+        class ThreadSample2
+        {
+            private readonly int _iteration;
+
+            public ThreadSample2(int iteration)
+            {
+                _iteration = iteration;
+            }
+
+            public void CountNumbers()
+            {
+                for (int i = 1; i <= _iteration; i++){
+                    Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                    Console.WriteLine("{0} prints {1}", Thread.CurrentThread.Name, i);
+                }
+            }
+
         }
     }
 }
