@@ -16,19 +16,34 @@ namespace MulityThreadNote
             //Thread t2 = new Thread(new ParameterizedThreadStart(PrintNumbers));//有参数的委托
             //t2.Start(10);
             //Console.ReadKey();
+
             //=====================线程阻塞======================//
             //Thread t1 = new Thread(PrintNumbersWithDelay);
             //t1.Start();
             //PrintNumbers();
             //Console.ReadLine();
+
             //=====================线程等待======================//
-            Console.WriteLine("Starting...");
-            Thread th = new Thread(PrintNumbersWithDelay2);
-            th.Start();
-            th.Join();  //使用join等待th完成
+            //Console.WriteLine("Starting...");
+            //Thread th = new Thread(PrintNumbersWithDelay2);
+            //th.Start();
+            //th.Join();  //使用join等待th完成
+            //PrintNumbers2();
+            //Console.WriteLine("THread Complete");
+            //Console.ReadLine();
+
+            //=====================终止线程======================//
+            Console.WriteLine("Starting Program...");
+            Thread t1 = new Thread(PrintNumbersWithDelay2);
+            t1.Start();
+            Thread.Sleep(TimeSpan.FromSeconds(6));
+            t1.Abort();     //使用Abort()终止线程
+            Console.WriteLine("Thread t1 has been aborted");
+            Thread t2 = new Thread(PrintNumbers2);
+            //t2.Start();
             PrintNumbers2();
-            Console.WriteLine("THread Complete");
             Console.ReadLine();
+
 
         }
         //=====================创建线程======================//
